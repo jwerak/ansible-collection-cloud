@@ -1,0 +1,11 @@
+---
+# defaults file for gcp_network
+gcp_network_default_firewall_rules:
+  - name: allow-wireguard
+    allowed:
+      - ip_protocol: udp
+        ports:
+          - "51820"
+    target_tags:
+      - wireguard
+    state: present

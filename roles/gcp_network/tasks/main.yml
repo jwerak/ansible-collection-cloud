@@ -1,0 +1,20 @@
+---
+- name: Get default network
+  google.cloud.gcp_compute_network_info:
+    filters:
+      - name = default
+    project: "{{ gcp_vm_project_id }}"
+    auth_kind: "{{ gcp_vm_cred_kind }}"
+    service_account_file: "{{ gcp_vm_cred_file }}"
+  delegate_to: localhost
+  register: network
+
+- name: Configure Firewall rules for default network
+  google.cloud.gcp_compute_firewall:
+    name: "{{ item.name }}"
+    allowed: "{{ item.allowed | default([]) }}"
+    target_tags: "{{ item.target_tags | default([]) }}"
+    state: "{{ item.state }}"
+    network: "{{ network }}"
+  delegate_to: localhost
+  loop: "{{ gcp_network_default_firewall_rules }}"
