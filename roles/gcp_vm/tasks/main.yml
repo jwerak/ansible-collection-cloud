@@ -1,0 +1,65 @@
+---
+- name: Get default network
+  google.cloud.gcp_compute_network_info:
+    filters:
+      - name = default
+    project: "{{ gcp_vm_project_id }}"
+    auth_kind: "{{ gcp_vm_cred_kind }}"
+    service_account_file: "{{ gcp_vm_cred_file }}"
+  delegate_to: localhost
+  register: network
+
+- name: Manage Public IP Address for VM
+  google.cloud.gcp_compute_address:
+    name: "{{ gcp_vm_instance_name }}-address"
+    region: "{{ gcp_vm_region }}"
+    project: "{{ gcp_vm_project_id }}"
+    auth_kind: "{{ gcp_vm_cred_kind }}"
+    service_account_file: "{{ gcp_vm_cred_file }}"
+    state: "{{ gcp_vm_state }}"
+  delegate_to: localhost
+  register: address
+
+- name: Manage RHEL VM on GCP from custom image
+  google.cloud.gcp_compute_instance:
+    project: "{{ gcp_vm_project_id }}"
+    auth_kind: "{{ gcp_vm_cred_kind }}"
+    service_account_file: "{{ gcp_vm_cred_file }}"
+    name: "{{ gcp_vm_instance_name }}"
+    state: "{{ gcp_vm_state }}"
+    zone: "{{ gcp_vm_zone }}"
+    machine_type: "{{ gcp_vm_machine_type }}"
+    metadata:
+      user-data: |
+        #cloud-config
+
+        ssh_authorized_keys: {{ gcp_vm_ssh_auth_keys | default([]) | to_yaml }}
+        user: {{ gcp_vm_os_user }}
+    network_interfaces:
+      - network:
+          selfLink: global/networks/default
+        access_configs:
+          - name: External NAT
+            nat_ip: "{{ address }}"
+            type: ONE_TO_ONE_NAT
+    disks:
+      - auto_delete: true
+        boot: true
+        initialize_params:
+          source_image: "projects/{{ gcp_vm_image_project }}/global/images/{{ gcp_vm_image_name }}"
+    tags:
+      items:
+        - ansible
+        - wireguard
+        - rhel
+  delegate_to: localhost
+  register: instance
+
+- name: Wait for SSH to come up
+  when: gcp_vm_state == "present"
+  ansible.builtin.wait_for:
+    host: "{{ address.address }}"
+    port: 22
+    delay: 10
+    timeout: 360
+  delegate_to: localhost

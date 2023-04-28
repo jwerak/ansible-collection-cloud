@@ -1,0 +1,14 @@
+---
+# defaults file for gcp_vm
+# These vars should be defined on per host or group basis
+# gcp_vm_project_id: focal-inquiry-319820
+# gcp_vm_zone: europe-west1-b
+# gcp_vm_region: europe-west1
+# gcp_vm_instance_name: rhel-vm
+# gcp_vm_machine_type: e2-micro
+# gcp_vm_disk_size_gb: 20
+# gcp_vm_image_project: rhel-byos-cloud
+# gcp_vm_image_name: rhel-9-byos-v20230411
+gcp_vm_ssh_auth_keys: []
+gcp_vm_os_user: ansible
+gcp_vm_state: present
