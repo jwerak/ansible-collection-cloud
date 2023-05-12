@@ -21,6 +21,7 @@
     zone: "{{ gcp_vm_zone }}"
     machine_type: "{{ gcp_vm_machine_type }}"
     metadata:
+      ansible_user: "{{ ansible_user }}"
       user-data: |
         #cloud-config
 
