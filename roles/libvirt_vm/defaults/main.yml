@@ -1,0 +1,8 @@
+# defaults file for libvirt_vm
+---
+libvirt_vm_pool_dir: /var/lib/libvirt/images
+libvirt_vm_hostname: linux
+libvirt_vm_name: undefined
+libvirt_vm_vcpus: 2
+libvirt_vm_ram_mb: 2048
+libvirt_vm_default_hypervisor: hypervisor_local

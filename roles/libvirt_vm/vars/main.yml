@@ -1,0 +1,5 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for libvirt_vm
+__libvirt_uri: "{{ libvirt_uri | default('qemu:///system') }}"
+__libvirt_vm_image_path: "{{ libvirt_vm_pool_dir }}/{{ libvirt_vm_name }}.qcow2"

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Get VM image file stats on {{ hypervisor }}
+  ansible.builtin.stat:
+    path: "{{ __libvirt_vm_image_path }}"
+  register: vm_image_stats
+  delegate_to: "{{ hypervisor }}"
+
+- name: Copy VM image to {{ hypervisor }}
+  when: not vm_image_stats.stat.exists
+  ansible.builtin.copy:
+    src: "{{ libvirt_vm_images_path_source }}/{{ libvirt_vm_image_source }}"
+    dest: "{{ __libvirt_vm_image_path }}"
+    mode: "0644"
+    owner: "qemu"
+    group: "qemu"
+  delegate_to: "{{ hypervisor }}"

@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: MIT-0
+---
+argument_specs:
+  main:
+    short_description: Create and manage VMs on Libvirt
+    description:
+      - This role creates virtual machines using libvirt
+      - It copies VM images and registers them with libvirt
+    options:
+      libvirt_vm_images_path_source:
+        description: Path to source VM images directory
+        type: str
+        required: true
+      libvirt_vm_image_source:
+        description: Path to source VM image, e.g. rhel-server-7.9-update-12-x86_64-kvm.qcow2
+        type: str
+        required: true
+      libvirt_vm_name:
+        description: Name of the VM to create
+        type: str
+        required: true
+      libvirt_vm_hostname:
+        description: Hostname for the VM
+        type: str
+        default: linux
+      libvirt_vm_vcpus:
+        description: Number of virtual CPUs
+        type: int
+        default: 2
+      libvirt_vm_ram_mb:
+        description: RAM size in MB
+        type: int
+        default: 2048
+      libvirt_vm_pool_dir:
+        description: Destination path for VM images
+        type: str
+        default: /var/lib/libvirt/images
+      libvirt_vm_bridge:
+        description: Network bridge to use
+        type: str
+        default: bridge0
+      libvirt_vm_osinfo:
+        description: OS information for the VM
+        type: str
+        required: false
+      libvirt_uri:
+        description: Libvirt connection URI
+        type: str
+        default: qemu:///system

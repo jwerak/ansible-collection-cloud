@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Get VMs list
+  community.libvirt.virt:
+    command: list_vms
+    uri: "{{ __libvirt_uri }}"
+  register: existing_vms
+  changed_when: false
+  delegate_to: localhost
+
+- name: Stop Execution if VM already exists
+  when: "libvirt_vm_name in existing_vms.list_vms"
+  ansible.builtin.meta: end_host
+
+- name: Ensure VM image exists on all hypervisors
+  ansible.builtin.include_tasks: ensure_vm_image_on_hypervisor.yml
+  when: "'hypervisors' in groups and groups['hypervisors'] | length > 0"
+  loop: "{{ groups['hypervisors'] }}"
+  loop_control:
+    loop_var: hypervisor
+
+- name: Copy VM image to localhost if hypervisors group is not defined
+  when: not 'hypervisors' in groups or groups['hypervisors'] | length < 1
+  ansible.builtin.copy:
+    src: "{{ libvirt_vm_images_path_source }}/{{ libvirt_vm_image_source }}"
+    dest: "{{ __libvirt_vm_image_path }}"
+    mode: "0644"
+    owner: "qemu"
+    group: "qemu"
+  delegate_to: localhost
+
+- name: VM Installation
+  community.libvirt.virt_install:
+    name: "{{ libvirt_vm_name }}"
+    memory: "{{ libvirt_vm_ram_mb }}"
+    vcpus: "{{ libvirt_vm_vcpus }}"
+    autostart: true
+    disks:
+      - path: "{{ __libvirt_vm_image_path }}"
+    osinfo:
+      name: "{{ libvirt_vm_osinfo | default(omit) }}"
+    import: true
+    networks:
+      - bridge: "{{ libvirt_vm_bridge | default('bridge0') }}"
+    uri: "{{ __libvirt_uri }}"
+  delegate_to: localhost
+
+- name: Print message about VM installation
+  ansible.builtin.debug:
+    msg: "VM {{ libvirt_vm_name }} installed"
+  delegate_to: localhost
