@@ -40,8 +40,7 @@
     osinfo:
       name: "{{ libvirt_vm_osinfo | default(omit) }}"
     import: true
-    networks:
-      - bridge: "{{ libvirt_vm_bridge | default('bridge0') }}"
+    networks: "{{ libvirt_vm_networks }}"
     uri: "{{ __libvirt_vm_uri }}"
   delegate_to: localhost
 

@@ -47,3 +47,7 @@ argument_specs:
         description: Libvirt connection URI
         type: str
         default: qemu:///system
+      libvirt_vm_networks:
+        description: Networks to use for the VM
+        type: list
+        default: ["network": "default"]
