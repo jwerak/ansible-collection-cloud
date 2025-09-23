@@ -43,7 +43,7 @@ argument_specs:
         description: OS information for the VM
         type: str
         required: false
-      libvirt_uri:
+      libvirt_vm_uri:
         description: Libvirt connection URI
         type: str
         default: qemu:///system

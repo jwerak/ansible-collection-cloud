@@ -3,7 +3,7 @@
 - name: Get VMs list
   community.libvirt.virt:
     command: list_vms
-    uri: "{{ __libvirt_uri }}"
+    uri: "{{ __libvirt_vm_uri }}"
   register: existing_vms
   changed_when: false
   delegate_to: localhost
@@ -42,7 +42,7 @@
     import: true
     networks:
       - bridge: "{{ libvirt_vm_bridge | default('bridge0') }}"
-    uri: "{{ __libvirt_uri }}"
+    uri: "{{ __libvirt_vm_uri }}"
   delegate_to: localhost
 
 - name: Print message about VM installation
